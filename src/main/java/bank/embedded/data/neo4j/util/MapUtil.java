@@ -1,0 +1,261 @@
+package bank.embedded.data.neo4j.util;
+
+import java.util.List;
+import java.util.Map;
+
+
+import java.util.HashMap;
+
+import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
+
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
+
+
+
+/**
+ * 添加属性的工具类
+ * @author dell
+ *
+ */
+public class MapUtil {
+
+	
+	 public static enum LabelTypes implements Label
+	{
+
+	  P,C,Com,Per,B,N,CK
+
+	}
+	public static enum RelTypes implements RelationshipType
+
+	{
+
+	 JY,DK,DY,DB,ZDB,
+	}
+	
+	public Map<String, Object> map(Node c){
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		if(c.hasLabel(LabelTypes.P)) {
+			result.put("khxm",c.getProperty("khxm"));
+			result.put("csrq",c.getProperty("csrq"));
+			result.put("gh",c.getProperty("gh"));
+			result.put("yxjgdm",c.getProperty("yxjgdm"));
+			result.put("gj",c.getProperty("gj"));
+			result.put("yxjgmc",c.getProperty("yxjgmc"));
+			result.put("xb",c.getProperty("xb"));
+			result.put("sfygbz",c.getProperty("sfygbz"));
+			result.put("mz",c.getProperty("mz"));
+			result.put("zhmc",c.getProperty("zhmc"));
+			result.put("zy",c.getProperty("zy"));
+			result.put("label","P");
+			result.put("creditcode",c.getProperty("creditcode"));
+			result.put("id",c.getId());
+		}else if(c.hasLabel(LabelTypes.C)){				
+			result.put("khmc",c.getProperty("khmc"));
+			result.put("zzc",c.getProperty("zzc"));
+			result.put("jzc",c.getProperty("jzc"));
+			result.put("fxyjxh",c.getProperty("fxyjxh"));
+			result.put("xzqhdm",c.getProperty("xzqhdm"));
+			result.put("zcdz",c.getProperty("zcdz"));
+			result.put("ssxy",c.getProperty("ssxy"));
+			result.put("zczb",c.getProperty("zczb"));
+			result.put("frdb",c.getProperty("frdb"));
+			result.put("sszb",c.getProperty("sszb"));
+			result.put("frdbzjhm",c.getProperty("frdbzjhm"));
+			result.put("label","C");
+			result.put("creditcode",c.getProperty("creditcode"));
+			result.put("id",c.getId());
+		}else if(c.hasLabel(LabelTypes.B)){				
+			result.put("yxjgdm",c.getProperty("yxjgdm"));
+			result.put("jglb",c.getProperty("jglb"));
+			result.put("yyzt",c.getProperty("yyzt"));
+			result.put("jgdz",c.getProperty("jgdz"));
+			result.put("jggzkssj",c.getProperty("jggzkssj"));
+			result.put("fzrxm",c.getProperty("fzrxm"));
+			result.put("cjrq",c.getProperty("cjrq"));
+			result.put("jrxkzh",c.getProperty("jrxkzh"));
+			result.put("fzrlxdh",c.getProperty("fzrlxdh"));
+			result.put("nbjgh",c.getProperty("nbjgh"));
+			result.put("fzrzw",c.getProperty("fzrzw"));
+			result.put("clsj",c.getProperty("clsj"));
+			result.put("yxjgmc",c.getProperty("yxjgmc"));
+			result.put("yzbm",c.getProperty("yzbm"));
+			result.put("jggzzzsj",c.getProperty("jggzzzsj"));
+			result.put("wdh",c.getProperty("wdh"));
+			result.put("id",c.getId());
+			result.put("label","B");
+		}else if(c.hasLabel(LabelTypes.CK)){				
+			result.put("id",c.getId());
+			result.put("creditcode",c.getProperty("creditcode"));
+			result.put("yxjgdm",c.getProperty("yxjgdm"));
+			result.put("yxjgmc",c.getProperty("yxjgmc"));
+			result.put("ckzh",c.getProperty("ckzh"));
+			result.put("bzjzhbz",c.getProperty("bzjzhbz"));
+			result.put("ckye",c.getProperty("ckye"));
+			result.put("zhmc",c.getProperty("zhmc"));
+			result.put("khtybh",c.getProperty("khtybh"));
+			result.put("bz",c.getProperty("bz"));
+			if(c.hasLabel(LabelTypes.Com)) {
+				result.put("label", "Com");
+			}else {
+				result.put("label", "Per");
+			}
+		}
+		
+		if(c.hasProperty("flag")) {
+			result.put("flag", "危险");
+		}
+		
+	return result;
+	}
+	
+	public Map<String, Object> map(String key1, Object value1, String key2, Object value2,Relationship r) {
+		Map<String, Object> result = new HashMap<String, Object>(2);
+		result.put(key1, value1);
+		result.put(key2, value2);
+		if(r.isType(RelTypes.DB)) {
+			result.put("label","DB");
+			result.put("yxjgmc_zh",r.getProperty("yxjgmc_zh"));
+			result.put("yxjgdm",r.getProperty("yxjgdm"));
+			result.put("dbrzjhm",r.getProperty("dbrzjhm"));
+			result.put("dbqsrq", r.getProperty("dbqsrq"));
+			result.put("dbdqrq",r.getProperty("dbdqrq"));
+			result.put("dbdqrq_sj",r.getProperty("dbdqrq_sj"));
+			result.put("dkrzjhm", r.getProperty("dkrzjhm"));
+			result.put("yxjgmc",r.getProperty("yxjgmc"));
+			result.put("dbzje",r.getProperty("dbzje"));
+			result.put("dbbz", r.getProperty("dbbz"));
+			result.put("db",r.getProperty("db"));
+			result.put("dbhtzt",r.getProperty("dbhtzt"));
+			
+		}
+		if(r.isType(RelTypes.DK)) {
+			result.put("label","DK");
+			result.put("bz",r.getProperty("bz"));
+			result.put("yxjgdm",r.getProperty("yxjgdm"));
+			result.put("khmc",r.getProperty("khmc"));
+			result.put("dkqx",r.getProperty("dkqx"));
+			result.put("hkzh", r.getProperty("hkzh"));
+			result.put("dkrzzh",r.getProperty("dkrzzh"));
+			result.put("xdywzl",r.getProperty("xdywzl"));
+			result.put("xdyxm", r.getProperty("xdyxm"));
+			result.put("zjhm",r.getProperty("zjhm"));
+			result.put("dksjdqrq_sj",r.getProperty("dksjdqrq_sj"));
+			result.put("zydbfs", r.getProperty("zydbfs"));
+			result.put("dkyt",r.getProperty("dkyt"));
+			result.put("bzjje",r.getProperty("bzjje"));
+			result.put("dkgx", r.getProperty("dkgx"));
+			result.put("dksjdqrq",r.getProperty("dksjdqrq"));
+			result.put("zqs",r.getProperty("zqs"));
+			result.put("zqcs",r.getProperty("zqcs"));
+			result.put("dkwjfl",r.getProperty("dkwjfl"));
+			result.put("hkfs",r.getProperty("hkfs"));
+			result.put("xdygh", r.getProperty("xdygh"));
+			result.put("khtybh",r.getProperty("khtybh"));
+			result.put("dksjffrq",r.getProperty("dksjffrq"));
+			result.put("yxjgmc_zh", r.getProperty("yxjgmc_zh"));
+			result.put("dktxxy",r.getProperty("dktxxy"));
+			result.put("xdjjh",r.getProperty("xdjjh"));
+			result.put("xdhth", r.getProperty("xdhth"));
+			result.put("je",r.getProperty("je"));
+			result.put("jkye",r.getProperty("jkye"));
+			result.put("dklx", r.getProperty("dklx"));
+			result.put("fkfs",r.getProperty("fkfs"));
+			result.put("dksjffrq_sj",r.getProperty("dksjffrq_sj"));
+			result.put("yxjgmc",r.getProperty("yxjgmc"));
+			
+		}
+		if(r.isType(RelTypes.JY)) {
+			result.put("label","JY");
+			result.put("bz",r.getProperty("bz"));
+			result.put("yxjgdm",r.getProperty("yxjgdm"));
+			result.put("zhye",r.getProperty("zhye"));
+			result.put("cjrq",r.getProperty("cjrq"));
+			
+			result.put("jyzh",r.getProperty("jyzh"));
+			result.put("jyqd",r.getProperty("jyqd"));
+			result.put("ywlx",r.getProperty("ywlx"));
+			result.put("jysj",r.getProperty("jysj"));
+			
+			result.put("hxjylsh",r.getProperty("hxjylsh"));
+			result.put("dfxh",r.getProperty("dfxh"));
+			result.put("jyjdbz",r.getProperty("jyjdbz"));
+			result.put("mxkmbh",r.getProperty("mxkmbh"));
+			
+			result.put("jyjgmc",r.getProperty("jyjgmc"));
+			result.put("xzbz",r.getProperty("xzbz"));
+			result.put("jyhm",r.getProperty("jyhm"));
+			result.put("dfjgmc",r.getProperty("dfjgmc"));
+			
+			result.put("jyjzh",r.getProperty("jyjzh"));
+			result.put("dfhm",r.getProperty("dfhm"));
+			result.put("kxhbz",r.getProperty("kxhbz"));
+			result.put("jylx",r.getProperty("jylx"));
+			
+			result.put("jygx",r.getProperty("jygx"));
+			result.put("czgyh",r.getProperty("czgyh"));
+			result.put("jyje",r.getProperty("jyje"));
+			result.put("jyrq",r.getProperty("jyrq"));
+			
+			result.put("zy",r.getProperty("zy"));
+			result.put("zhbz",r.getProperty("zhbz"));
+			
+			result.put("bcxh",r.getProperty("bcxh"));
+			result.put("jyrq_sj",r.getProperty("jyrq_sj"));
+			result.put("jyjgmc_zh",r.getProperty("jyjgmc_zh"));
+			result.put("dfzh",r.getProperty("dfzh"));
+			
+		}
+		if(r.isType(RelTypes.ZDB)) {
+			result.put("label","ZDB");
+			result.put("zdbje",Double.parseDouble((String)r.getProperty("zdbje")));
+			result.put("zdbcs",r.getProperty("zdbcs"));
+		}
+		if(r.isType(RelTypes.DY)) {
+			result.put("label","DY");
+		}
+		result.put("id",r.getId());
+		
+		return result;
+		
+	}
+	/**
+	 * 添加键值对
+	 * @param key1
+	 * @param value1
+	 * @param key2
+	 * @param value2
+	 * @return
+	 */
+	public Map<String, List<Map<String, Object>>> map(String key1, List<Map<String, Object>> value1, String key2, List<Map<String, Object>> value2) {
+		Map<String, List<Map<String, Object>>> result = new HashMap<String, List<Map<String, Object>>>(2);
+		result.put(key1, value1);
+		result.put(key2, value2);
+		return result;
+	}
+	/**
+	 * 遍历所有节点，找到与当前节点相同id的节点，将其index修改
+	 * @param node
+	 * @param nodes
+	 * @return
+	 */
+	public int getIndex(Map<String, Object> node,List<Map<String, Object>> nodes) {
+		int index=-1;
+		int length=nodes.size();
+		for(int i=0;i<length;i++) {
+			
+			if(node.get("id").toString().equals(nodes.get(i).get("id").toString())){
+				index=i;
+				break;
+			}
+			
+			
+		}
+		return index;
+	}
+	
+
+}

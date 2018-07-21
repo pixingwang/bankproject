@@ -1,0 +1,572 @@
+package bank.spring.data.neo4j.controller;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.bouncycastle.jcajce.provider.asymmetric.RSA;
+import org.bouncycastle.jcajce.provider.asymmetric.dsa.DSASigner.stdDSA;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import bank.spring.data.neo4j.UpdateRDBMS;
+import bank.spring.data.neo4j.importdata.Batch;
+import bank.spring.data.neo4j.services.AcountService;
+import bank.spring.data.neo4j.services.RelationshipService;
+import bank.spring.data.neo4j.util.MysqlConnection;
+import bank.spring.data.neo4j.util.UpdateSaveOld;
+import bank.spring.data.neo4j.util.UtilService;
+import net.sf.json.JSONObject;
+
+
+
+
+@RestController
+public class BankController {
+	
+	UtilService us=new UtilService();
+	UpdateSaveOld uOld=new UpdateSaveOld();
+	final RelationshipService relationshipService;
+	final AcountService acountService;
+	public static MysqlConnection mysqlConn= new MysqlConnection();
+	
+	public static Map<String, List<Map<String, Object>>> saveOld=new HashMap<String, List<Map<String, Object>>>();//保存查询结果
+	@Autowired
+	UpdateRDBMS ur;
+	@Autowired
+	Batch batch;
+	
+	@Autowired
+	public BankController(RelationshipService relationshipService,AcountService acountService) {
+
+		this.relationshipService=relationshipService;
+		this.acountService=acountService;
+	}
+
+	@RequestMapping(value="/graph",method=RequestMethod.POST)//显示概要图
+	@ResponseBody
+	public String graph(@RequestParam(value = "limit",required = false) Integer limit) throws IOException, InterruptedException{
+		//关闭数据库
+		System.out.println("开始更新数据库");
+		Runtime.getRuntime().exec("cmd /c "+"neo4j stop",null,new File("D:\\neo4j\\neo4j-community-3.3.0\\bin"));  
+		Thread.sleep(20*1000);
+		System.out.println("数据库以关闭");
+		//导入图数据
+		batch.Deletedatabase();
+		batch.Update();
+		
+		//更新数据
+		ur.setUp();
+		ur.update();
+		
+	
+		//开启数据库
+		Runtime.getRuntime().exec("cmd /c "+"neo4j start",null,new File("D:\\neo4j\\neo4j-community-3.3.0\\bin"));
+		Thread.sleep(60*1000);
+		System.out.println("数据库以开启");
+		
+		
+		//其他查询更新
+		/*System.out.println("开始更新其他模式数据");
+		SaveDataToRDBMS sdtr=new SaveDataToRDBMS(relationshipService);
+		sdtr.deleteTableData();
+		System.out.println("其他模式数据更新完毕");*/
+		
+		return "[]";
+	}
+	@RequestMapping(value="/searchDBcircleInfo",method=RequestMethod.POST)//展示担保圈信息
+	@ResponseBody
+	public String showDbCircleInfo() throws IOException {
+		Map<String, List<Map<String, Integer>>> result = new HashMap<String, List<Map<String, Integer>>>();
+		List<Map<String,Integer>> list=new ArrayList<>();
+		Connection conn=mysqlConn.GetSqlConnection();
+		
+		try {
+			String sql="SELECT circleLength,max(skip) as times FROM circledata GROUP BY circleLength";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				Map<String,Integer> map=new HashMap<>();
+				map.put("nodesNum",rs.getInt(1));
+				map.put("count",rs.getInt(2));
+				list.add(map);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		result.put("DbCircleInfo",list);
+		JSONObject json=JSONObject.fromObject(result);
+		return json.toString();
+	}
+	
+	
+	@RequestMapping(value="/searchDBcircleListInfo",method=RequestMethod.POST)//展示担保圈列表
+	@ResponseBody
+	public String showDbCircleListInfo() throws IOException {
+		Map<String, List<Map<String, Object>>> result = new HashMap<String, List<Map<String, Object>>>();
+		List<Map<String,Object>> list=new ArrayList<>();
+		Connection conn=mysqlConn.GetSqlConnection();
+		
+		try {
+			String sql="SELECT circleLength,skip,itemName FROM circledata";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				Map<String,Object> map=new HashMap<>();
+				map.put("nodesNum",rs.getInt(1));
+				map.put("skip",rs.getInt(2));
+				map.put("itemName", rs.getString(3));
+				list.add(map);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		result.put("DbCircleListInfo",list);
+		JSONObject json=JSONObject.fromObject(result);
+		return json.toString();
+	}
+	/*@RequestMapping(value="/searchDegreeCentralityListInfo",method=RequestMethod.POST)
+	@ResponseBody
+	public String searchDegreeCentralityListInfo() throws IOException {
+		Map<String, List<Map<String, Object>>> result = new HashMap<String, List<Map<String, Object>>>();
+		List<Map<String,Object>> list=new ArrayList<>();
+		Connection conn=mysqlConn.GetSqlConnection();
+		
+		try {
+			String sql="SELECT itemName,startNodeId FROM DegreeCentrality";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				Map<String,Object> map=new HashMap<>();
+				map.put("itemName", rs.getString(1));
+				map.put("startNodeId", rs.getLong(2));
+				list.add(map);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		result.put("DegreeCentralityListInfo",list);
+		JSONObject json=JSONObject.fromObject(result);
+		return json.toString();
+	}*/
+	/*@RequestMapping(value="/searchDegreeCentrality",method=RequestMethod.POST)
+	@ResponseBody
+	public String searchDegreeCentrality(@Param("startNodeId") Long startNodeId) throws IOException {
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM DegreeCentrality WHERE startNodeId ="+startNodeId+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}*/
+	//返回所有pattern的总条数
+	@RequestMapping(value="/searchPatternNumInfo",method=RequestMethod.POST)
+	@ResponseBody
+	public String searchDegreeCentralityListInfo() throws IOException {
+		Map<String, List<Map<String, Object>>> result = new HashMap<String, List<Map<String, Object>>>();
+		List<Map<String,Object>> list=new ArrayList<>();
+		
+		Connection conn=mysqlConn.GetSqlConnection();
+
+			try {
+				String tabelName="";
+				for(int i=1;i<=8;i++) {
+					switch(i) {
+					case 1:tabelName="dkffzyg";break;
+					case 2:tabelName="dkhlzdbr";break;
+					case 3:tabelName="dkhlzfrdb";break;
+					case 4:tabelName="dkyjhx";break;
+					case 5:tabelName="dkzrfdc";break;
+					case 6:tabelName="dkzrrzdb";break;
+					case 7:tabelName="xfdjrfdc";break;
+					case 8:tabelName="dkyyycbz";break;
+					}
+					String sql="select max(skip) from "+tabelName;
+					Statement st=conn.createStatement();
+					ResultSet rs=st.executeQuery(sql);
+					while(rs.next()) {
+						Map<String,Object> map=new HashMap<>();
+						int num=rs.getInt(1);
+						map.put(tabelName,num);
+						list.add(map);
+					}
+					rs.close();
+					st.close();
+				}	
+					conn.close();		
+				
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		result.put("PattenNumInfo",list);
+		JSONObject json=JSONObject.fromObject(result);
+		return json.toString();
+		
+	}
+	
+	@RequestMapping(value="/searchDBcircle",method=RequestMethod.POST)//搜索担保圈
+	@ResponseBody
+	public String findCircle_DB(@Param("num") Integer num,@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM circledata WHERE circlelength ="+num+" and skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	@RequestMapping(value="/searchTopDbcircle",method=RequestMethod.POST)
+	@ResponseBody
+	public String searchTopDbcircleOflength(@Param("type") String type) throws IOException {
+	
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM circledataOftop WHERE type=\""+type+"\"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	
+	
+	@RequestMapping(value="/searchDBcircleByInput",method=RequestMethod.POST)//通过输入框搜索担保圈
+	@ResponseBody
+	public String searchDbCircleByInput(@Param("num") Integer num,@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+	
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM circledata WHERE circlelength ="+num+" and skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+
+
+	@RequestMapping(value="/findByCountName",method=RequestMethod.POST)//通过账户名称搜索节点
+	@ResponseBody
+	public Map<String, List<Map<String, Object>>> findByCountName(@Param("name") String name) {
+		saveOld=acountService.findByCountName(name.equals("")? "武汉":name);
+		return saveOld;
+	}
+	@RequestMapping(value="/findByCountNumber",method=RequestMethod.POST)//通过账户账号搜索节点
+	@ResponseBody
+	public Map<String, List<Map<String, Object>>> findByCountNumber(@Param("name") String name) {
+		saveOld=acountService.findByCountNumber(name.equals("")? "1":name);
+		return saveOld;
+	}
+	
+	@RequestMapping(value="/findByCompanyName",method=RequestMethod.POST)//通过账户名称搜索节点
+	@ResponseBody
+	public Map<String, List<Map<String, Object>>> findByCompanyName(@Param("name") String name) {
+		saveOld=relationshipService.findByCompanyName(name.equals("")? "武汉":name);
+		return saveOld;
+	}
+	@RequestMapping(value="/findByCompanyJgdm",method=RequestMethod.POST)//通过账户账号搜索节点
+	@ResponseBody
+	public Map<String, List<Map<String, Object>>> findByCompanyJgdm(@Param("name") String name) {
+		saveOld=relationshipService.findByCompanyJgdm(name.equals("")? "1":name);
+		return saveOld;
+	}
+	
+	
+	
+	
+	@RequestMapping(value="/extendById",method=RequestMethod.POST,produces = {"application/json;charset=utf-8"})//通过id扩展相应节点
+	@ResponseBody
+	public Map<String, List<Map<String, Object>>> extendById(@Param("id") Integer id,@Param("nodes")  String nodes,@Param("links") String links) {
+
+		saveOld.clear();
+		saveOld=uOld.update(nodes, links);
+		saveOld=relationshipService.extendById(id, saveOld);
+		/*System.out.println(saveOld.get("nodes").size()+"--"+saveOld.get("links").size());
+		Iterator<Map<String, Object>> r=saveOld.get("nodes").iterator();
+		while(r.hasNext()) {
+			Map<String,Object> sMap=r.next();
+			System.out.println(sMap);
+		}*/
+		return saveOld;
+	}
+			
+	@RequestMapping(value="/extendByInput",method=RequestMethod.POST,produces = {"application/json;charset=utf-8"})//通过输入条件扩展
+	@ResponseBody
+	public Map<String, List<Map<String, Object>>> extendByInput(@Param("id") Integer id,@Param("hop") Integer hop,@Param("nodes")  String nodes,@Param("links") String links,@Param("minJYJE") String minJYJE,@Param("maxJYJE") String maxJYJE,@Param("minJYRQ") String minJYRQ,@Param("maxJYRQ") String maxJYRQ) {
+
+		saveOld.clear();
+		saveOld=uOld.update(nodes, links);
+		System.out.println(hop+"--"+minJYJE+"--"+maxJYJE+"--"+minJYRQ+"--"+maxJYRQ);
+		saveOld=relationshipService.extendByInput(id,hop==null?1:hop,saveOld,minJYJE == "" ? "0":minJYJE,maxJYJE == "" ? "100000000000000":maxJYJE,minJYRQ=="" ?"00000000":minJYRQ,maxJYRQ==""?"99999999":maxJYRQ);
+		
+		return saveOld;
+	}
+	
+	
+	
+	@RequestMapping(value="/dkyyycbz",method=RequestMethod.POST)//贷款用于银承保证金
+	@ResponseBody
+	public String searchDkyyycbz(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchDkyyycbz(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM dkyyycbz WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	@RequestMapping(value="/dkzrfdc",method=RequestMethod.POST)//贷款转入房地产公司
+	@ResponseBody
+	public String searchDkzrfdc(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchDkzrfdc(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM dkzrfdc WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	@RequestMapping(value="/dkzrrzdb",method=RequestMethod.POST)//贷款转入融资担保类公司
+	@ResponseBody
+	public String searchDkzrrzdb(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchDkzrrzdb(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM dkzrrzdb WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	@RequestMapping(value="/dkhlzdbr",method=RequestMethod.POST)//贷款回流至担保人
+	@ResponseBody
+	public String searchDkhlzdbr(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchDkhlzdbr(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			
+			String sql="SELECT records FROM dkhlzdbr WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	@RequestMapping(value="/dkyjhx",method=RequestMethod.POST)//贷款以旧还新
+	@ResponseBody
+	public String searchDkyjhx(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchDkyjhx(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM dkyjhx WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	@RequestMapping(value="/dkhlzfrdb",method=RequestMethod.POST)//贷款回流至法人代表账户
+	@ResponseBody
+	public String searchDkhlzfrdb(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchDkhlzfrdb(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM dkhlzfrdb WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	@RequestMapping(value="/dkffzyg",method=RequestMethod.POST)//向本公司员工发放贷款
+	@ResponseBody
+	public String searchDkffzyg(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchDkffzyg(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM dkffzyg WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	@RequestMapping(value="/xfdkzrfdc",method=RequestMethod.POST)//消费贷转入房地产公司
+	@ResponseBody
+	public String searchXffkzrfdc(@RequestParam(value = "skip",required = false) Integer skip,@RequestParam(value = "limit",required = false) Integer limit) throws IOException {
+		/*return relationshipService.searchXfdkzrfdc(skip == null ? 0: skip,limit == null ? limit_num: limit);*/
+		skip=skip==null ? 0:skip;
+		Connection conn=mysqlConn.GetSqlConnection();
+		String result="{\"nodes\":[]}";
+		try {
+			String sql="SELECT records FROM xfdjrfdc WHERE skip ="+skip+"";
+			Statement pst=conn.createStatement();
+			ResultSet rs=pst.executeQuery(sql);
+			while(rs.next()) {
+				result=rs.getString(1);
+			}
+			rs.close();
+			pst.close();
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+	
+}
+

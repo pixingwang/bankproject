@@ -1,0 +1,86 @@
+package bank.spring.data.neo4j.domain;
+
+
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Property;
+
+
+@NodeEntity(label="C")
+
+public class Company extends Node {
+	
+	@Property(name="khmc")
+	public String khmc;
+	@Property(name="zzc")
+	public double zzc;
+	@Property(name="jzc")
+	public double jzc;
+	@Property(name="fxyjxh")
+	public String fxyjxh;
+	@Property(name="xzqhdm")
+	public String xzqhdm;
+	@Property(name="zcdz")
+	public String zcdz;
+	@Property(name="ssxy")
+	public String ssxy;
+	@Property(name="zczb")
+	public String zczb;
+	@Property(name="frdb")
+	public String frdb;
+	@Property(name="sszb")
+	public String sszb;
+	@Property(name="frdbzjhm")
+	public String frdbzjhm;
+	
+	public Company() {
+		
+	}
+	public Company(String creditcode) {
+		this.creditcode=creditcode;
+		
+	}
+	public String getKhmc() {
+		return khmc;
+	}
+	public double getZzc() {
+		return zzc;
+	}
+	public double getJzc() {
+		return jzc;
+	}
+	public String getFxyjxh() {
+		return fxyjxh;
+	}
+	public String getXzqhdm() {
+		return xzqhdm;
+	}
+	public String getZcdz() {
+		return zcdz;
+	}
+	public String getSsxy() {
+		return ssxy;
+	}
+	public String getZczb() {
+		return zczb;
+	}
+	public String getFrdb() {
+		return frdb;
+	}
+	public String getSszb() {
+		return sszb;
+	}
+	public String getFrdbzjhm() {
+		return frdbzjhm;
+	}
+	
+	public static String label="C";
+	
+	public String getLabel() {
+		return label;
+	}
+	
+	
+
+	
+
+}

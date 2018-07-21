@@ -1,0 +1,95 @@
+package bank.spring.data.neo4j.domain;
+
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Property;
+
+@NodeEntity(label="B")
+public class Bank extends Entity{
+	@Property(name="yxjgdm")
+	public String yxjgdm;
+	@Property(name="jglb")
+	public String jglb;
+	@Property(name="yyzt")
+	public String yyzt;
+	@Property(name="jgdz")
+	public String jgdz;
+	@Property(name="jggzkssj")
+	public String jggzkssj;
+	@Property(name="fzrxm")
+	public String fzrxm;
+	@Property(name="cjrq")
+	public String cjrq;
+	@Property(name="jrxkzh")
+	public String jrxkzh;
+	@Property(name="fzrlxdh")
+	public String fzrlxdh;
+	@Property(name="nbjgh")
+	public String nbjgh;
+	@Property(name="fzrzw")
+	public String fzrzw;
+	@Property(name="clsj")
+	public String clsj;
+	@Property(name="yxjgmc")
+	public String yxjgmc;
+	@Property(name="yzbm")
+	public String yzbm;
+	@Property(name="jggzzzsj")
+	public String jggzzzsj;
+	@Property(name="wdh")
+	public String wdh;
+	public String getYxjgdm() {
+		return yxjgdm;
+	}
+	public String getJglb() {
+		return jglb;
+	}
+	public String getYyzt() {
+		return yyzt;
+	}
+	public String getJgdz() {
+		return jgdz;
+	}
+	public String getJggzkssj() {
+		return jggzkssj;
+	}
+	public String getFzrxm() {
+		return fzrxm;
+	}
+	public String getCjrq() {
+		return cjrq;
+	}
+	public String getJrxkzh() {
+		return jrxkzh;
+	}
+	public String getFzrlxdh() {
+		return fzrlxdh;
+	}
+	public String getNbjgh() {
+		return nbjgh;
+	}
+	public String getFzrzw() {
+		return fzrzw;
+	}
+	public String getClsj() {
+		return clsj;
+	}
+	public String getYxjgmc() {
+		return yxjgmc;
+	}
+	public String getYzbm() {
+		return yzbm;
+	}
+	public String getJggzzzsj() {
+		return jggzzzsj;
+	}
+	public String getWdh() {
+		return wdh;
+	}
+	
+	public static String label="B";
+	
+	public String getLabel() {
+		return label;
+	}
+
+}

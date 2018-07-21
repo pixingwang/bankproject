@@ -1,0 +1,215 @@
+package bank.spring.data.neo4j.domain;
+
+
+import org.neo4j.ogm.annotation.EndNode;
+import org.neo4j.ogm.annotation.Property;
+import org.neo4j.ogm.annotation.RelationshipEntity;
+import org.neo4j.ogm.annotation.StartNode;
+
+
+
+
+@RelationshipEntity(type = "JY")
+public class JY extends Relationship{
+	
+	@Property(name="bz")
+	public String bz;
+	@Property(name="yxjgdm")
+	public String yxjgdm;
+	@Property(name="zhye")
+	protected double zhye;
+	@Property(name="cjrq")
+	protected String cjrq;
+	@Property(name="jyzh")
+	protected String jyzh;
+	@Property(name="jyqd")
+	protected String jyqd;
+	@Property(name="ywlx")
+	protected String ywlx;
+	@Property(name="jysj")
+	protected String jysj;
+	@Property(name="hxjylsh")
+	protected String hxjylsh;
+	@Property(name="dfxh")
+	protected String dfxh;
+	@Property(name="jyjdbz")
+	protected String jyjdbz;
+	@Property(name="mxkmbh")
+	protected String mxkmbh;
+	@Property(name="jyjgmc")
+	protected String jyjgmc;
+	@Property(name="jyjgmc_zh")
+	protected String jyjgmc_zh;
+	@Property(name="xzbz")
+	protected String xzbz;
+	@Property(name="jyhm")
+	protected String jyhm;
+	@Property(name="dfjgmc")
+	protected String dfjgmc;
+	@Property(name="jyjzh")
+	protected String jyjzh;
+	@Property(name="dfhm")
+	protected String dfhm;
+	public String getJyjgmc_zh() {
+		return jyjgmc_zh;
+	}
+
+	public String getJyrq_sj() {
+		return jyrq_sj;
+	}
+
+	public String getBcxh() {
+		return bcxh;
+	}
+
+	public String getDfzh() {
+		return dfzh;
+	}
+	@Property(name="kxhbz")
+	protected String kxhbz;
+	@Property(name="jylx")
+	protected String jylx;
+	@Property(name="jygx")
+	protected String jygx;
+	@Property(name="czgyh")
+	protected String czgyh;
+	@Property(name="jyje")
+	protected double jyje;
+	@Property(name="jyrq")
+	protected String jyrq;
+	@Property(name="jyrq_sj")
+	protected String jyrq_sj;
+	@Property(name="zy")
+	protected String zy;
+	@Property(name="zhbz")
+	protected String zhbz;
+	@Property(name="bcxh")
+	protected String bcxh;
+	@Property(name="dfzh")
+	protected String dfzh;
+	@StartNode
+	protected Acount StartNode;
+	@EndNode
+	protected Acount EndNode;
+	
+	public static String label="JY";
+
+	public String getLabel() {
+		return label;
+	}
+	
+	public Acount getStartNode() {
+		return StartNode;
+	}
+	public Acount getEndNode() {
+		return EndNode;
+	}
+
+	public String getBz() {
+		return bz;
+	}
+
+	public String getYxjgdm() {
+		return yxjgdm;
+	}
+
+	public double getZhye() {
+		return zhye;
+	}
+
+	public String getCjrq() {
+		return cjrq;
+	}
+
+	public String getJyzh() {
+		return jyzh;
+	}
+
+	public String getJyqd() {
+		return jyqd;
+	}
+
+	public String getYwlx() {
+		return ywlx;
+	}
+
+	public String getJysj() {
+		return jysj;
+	}
+
+	public String getHxjylsh() {
+		return hxjylsh;
+	}
+
+	public String getDfxh() {
+		return dfxh;
+	}
+
+	public String getJyjdbz() {
+		return jyjdbz;
+	}
+
+	public String getMxkmbh() {
+		return mxkmbh;
+	}
+
+	public String getJyjgmc() {
+		return jyjgmc;
+	}
+
+	public String getXzbz() {
+		return xzbz;
+	}
+
+	public String getJyhm() {
+		return jyhm;
+	}
+
+	public String getDfjgmc() {
+		return dfjgmc;
+	}
+
+	public String getJyjzh() {
+		return jyjzh;
+	}
+
+	public String getDfhm() {
+		return dfhm;
+	}
+
+	public String getKxhbz() {
+		return kxhbz;
+	}
+
+	public String getJylx() {
+		return jylx;
+	}
+
+	public String getJygx() {
+		return jygx;
+	}
+
+	public String getCzgyh() {
+		return czgyh;
+	}
+
+	public double getJyje() {
+		return jyje;
+	}
+
+	public String getJyrq() {
+		return jyrq;
+	}
+
+	public String getZy() {
+		return zy;
+	}
+
+	public String getZhbz() {
+		return zhbz;
+	}
+	public JY(){
+		
+	}
+	
+}

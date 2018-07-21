@@ -1,0 +1,82 @@
+package bank.spring.data.neo4j.domain;
+
+
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Property;
+
+
+@NodeEntity(label="P")
+public class Person extends Node {
+	
+	@Property(name="khxm")
+	public String khxm;
+	@Property(name="csrq")
+	public String csrq;
+	@Property(name="gh")
+	public String gh;
+	@Property(name="yxjgdm")
+	public String yxjgdm;
+	@Property(name="gj")
+	public String gj;
+	@Property(name="yxjgmc")
+	public String yxjgmc;
+	@Property(name="xb")
+	public String xb;
+	@Property(name="sfygbz")
+	public String sfygbz;
+	@Property(name="mz")
+	public String mz;
+	@Property(name="zhmc")
+	public String zhmc;
+	@Property(name="zy")
+	public String zy;
+	
+	public Person() {}
+	public Person(String creditcode) {
+		this.creditcode=creditcode;
+		
+	}
+	public String getKhxm() {
+		return khxm;
+	}
+	public String getCsrq() {
+		return csrq;
+	}
+	public String getGh() {
+		return gh;
+	}
+	public String getYxjgdm() {
+		return yxjgdm;
+	}
+	public String getGj() {
+		return gj;
+	}
+	public String getYxjgmc() {
+		return yxjgmc;
+	}
+	public String getXb() {
+		return xb;
+	}
+	public String getSfygbz() {
+		return sfygbz;
+	}
+	public String getMz() {
+		return mz;
+	}
+	public String getZhmc() {
+		return zhmc;
+	}
+	public String getZy() {
+		return zy;
+	}
+	
+	public static String label="P";
+	
+	public String getLabel() {
+		return label;
+	}
+	
+
+	
+
+}

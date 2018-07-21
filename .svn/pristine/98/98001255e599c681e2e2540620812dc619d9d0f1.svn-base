@@ -1,0 +1,63 @@
+package bank.spring.data.neo4j.domain;
+
+
+
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Property;
+
+@NodeEntity(label="CK")
+public class Acount extends Entity {
+	
+	@Property(name="creditcode")
+	protected String creditcode;
+	@Property(name="yxjgdm")
+	protected String yxjgdm;
+	@Property(name="yxjgmc")
+	protected String yxjgmc;
+	@Property(name="ckzh")
+	protected String ckzh;
+	@Property(name="bzjzhbz")
+	protected String bzjzhbz;
+	@Property(name="ckye")
+	protected double ckye;
+	@Property(name="zhmc")
+	protected String zhmc;
+	@Property(name="khtybh")
+	protected String khtybh;
+	@Property(name="bz")
+	protected String bz;
+	
+	public String getCreditcode() {
+		return creditcode;
+	}
+	public String getYxjgdm() {
+		return yxjgdm;
+	}
+	public String getYxjgmc() {
+		return yxjgmc;
+	}
+	public String getCkzh() {
+		return ckzh;
+	}
+	public String getBzjzhbz() {
+		return bzjzhbz;
+	}
+	public double getCkye() {
+		return ckye;
+	}
+	public String getZhmc() {
+		return zhmc;
+	}
+	public String getKhtybh() {
+		return khtybh;
+	}
+	public String getBz() {
+		return bz;
+	}
+	
+	public String getLabel() {
+		return null;
+	}
+	
+	
+}
